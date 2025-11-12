@@ -76,15 +76,40 @@ async function run() {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await booksCollection.findOne(query);
-        
+
         if (!result) {
           return res.status(404).send({ message: "Book not found" });
         }
-        
+
         res.send(result);
       } catch (error) {
         console.error("Error fetching book:", error);
         res.status(500).send({ message: "Failed to fetch book" });
+      }
+    });
+
+    app.get("/books/user/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const query = { userEmail: email };
+        const cursor = booksCollection.find(query).sort({ addedAt: -1 });
+        const result = await cursor.toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching user books:", error);
+        res.status(500).send({ message: "Failed to fetch user books" });
+      }
+    });
+
+    app.delete("/books/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await booksCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.error("Error deleting book:", error);
+        res.status(500).send({ message: "Failed to delete book" });
       }
     });
 
