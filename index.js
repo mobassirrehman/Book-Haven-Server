@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -39,10 +39,7 @@ async function run() {
 
     app.get("/books/latest", async (req, res) => {
       try {
-        const cursor = booksCollection
-          .find()
-          .sort({ addedAt: -1 })
-          .limit(6);
+        const cursor = booksCollection.find().sort({ addedAt: -1 }).limit(6);
         const result = await cursor.toArray();
         res.send(result);
       } catch (error) {
@@ -59,6 +56,35 @@ async function run() {
       } catch (error) {
         console.error("Error fetching books:", error);
         res.status(500).send({ message: "Failed to fetch books" });
+      }
+    });
+
+    app.post("/books", async (req, res) => {
+      try {
+        const newBook = req.body;
+        console.log("Received book:", newBook);
+        const result = await booksCollection.insertOne(newBook);
+        res.send(result);
+      } catch (error) {
+        console.error("Error adding book:", error);
+        res.status(500).send({ message: "Failed to add book" });
+      }
+    });
+
+    app.get("/books/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await booksCollection.findOne(query);
+        
+        if (!result) {
+          return res.status(404).send({ message: "Book not found" });
+        }
+        
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching book:", error);
+        res.status(500).send({ message: "Failed to fetch book" });
       }
     });
 
