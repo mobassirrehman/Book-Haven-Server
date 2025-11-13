@@ -143,6 +143,17 @@ async function run() {
       }
     });
 
+    app.get("/books/top-rated", async (req, res) => {
+      try {
+        const cursor = booksCollection.find().sort({ rating: -1 }).limit(3);
+        const result = await cursor.toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching top rated books:", error);
+        res.status(500).send({ message: "Failed to fetch books" });
+      }
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
