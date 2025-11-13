@@ -113,6 +113,29 @@ async function run() {
       }
     });
 
+    app.put("/books/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const updatedBook = req.body;
+        const filter = { _id: new ObjectId(id) };
+        const updateDoc = {
+          $set: {
+            title: updatedBook.title,
+            author: updatedBook.author,
+            genre: updatedBook.genre,
+            rating: updatedBook.rating,
+            summary: updatedBook.summary,
+            coverImage: updatedBook.coverImage,
+          },
+        };
+        const result = await booksCollection.updateOne(filter, updateDoc);
+        res.send(result);
+      } catch (error) {
+        console.error("Error updating book:", error);
+        res.status(500).send({ message: "Failed to update book" });
+      }
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
