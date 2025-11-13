@@ -9,6 +9,8 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+const commentRoutes = require("./routes/comments");
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.0zmmwcn.mongodb.net/?appName=Cluster0`;
 
 const client = new MongoClient(uri, {
@@ -28,10 +30,15 @@ async function run() {
     await client.connect();
 
     const db = client.db("bookHaven_db");
+    app.locals.db = db;
+    
     const booksCollection = db.collection("books");
     const commentsCollection = db.collection("comments");
 
     console.log("Successfully connected to MongoDB!");
+
+    const commentRoutes = require("./routes/comments");
+    app.use("/comments", commentRoutes);
 
     app.get("/test", (req, res) => {
       res.send("Book Haven API is working!");
