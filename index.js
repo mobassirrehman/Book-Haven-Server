@@ -55,6 +55,17 @@ async function run() {
       }
     });
 
+    app.get("/books/top-rated", async (req, res) => {
+      try {
+        const cursor = booksCollection.find().sort({ rating: -1 }).limit(3);
+        const result = await cursor.toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching top rated books:", error);
+        res.status(500).send({ message: "Failed to fetch books" });
+      }
+    });
+
     app.get("/books", async (req, res) => {
       try {
         const cursor = booksCollection.find().sort({ addedAt: -1 });
@@ -140,17 +151,6 @@ async function run() {
       } catch (error) {
         console.error("Error updating book:", error);
         res.status(500).send({ message: "Failed to update book" });
-      }
-    });
-
-    app.get("/books/top-rated", async (req, res) => {
-      try {
-        const cursor = booksCollection.find().sort({ rating: -1 }).limit(3);
-        const result = await cursor.toArray();
-        res.send(result);
-      } catch (error) {
-        console.error("Error fetching top rated books:", error);
-        res.status(500).send({ message: "Failed to fetch books" });
       }
     });
 
