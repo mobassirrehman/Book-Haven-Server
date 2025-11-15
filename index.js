@@ -37,7 +37,6 @@ async function run() {
 
     console.log("Successfully connected to MongoDB!");
 
-    const commentRoutes = require("./routes/comments");
     app.use("/comments", commentRoutes);
 
     app.get("/test", (req, res) => {
