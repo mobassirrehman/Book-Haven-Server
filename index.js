@@ -8,7 +8,8 @@ const port = process.env.PORT || 3000;
 // middleware
 app.use(
   cors({
-    origin: "https://dapper-trifle-02574c.netlify.app",
+    origin: ["https://the-book-haven-001.netlify.app", "http://localhost:5173"],
+
     credentials: true,
   })
 );
